@@ -1,0 +1,9 @@
+# War Driver board configuration
+
+# Copyright (c) 2023 Pete Johanson
+# SPDX-License-Identifier: MIT
+
+config BOARD_LPGALAXY_WAR_DRIVER
+	bool "LP Galaxy War Driver"
+	depends on SOC_NRF52840_QIAA
+

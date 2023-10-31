@@ -26,6 +26,13 @@
 		led0 = &blue_led;
 	};
 
+        keys {
+                compatible = "gpio-keys";
+                wakeup_key: wakeup_key {
+			gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+                };
+        };
+
 	leds {
 		compatible = "gpio-leds";
 		blue_led: led_0 {
@@ -33,14 +40,45 @@
 			label = "Blue LED";
 		};
 	};
+	
+	behaviors {
+                soft_off: behavior_soft_off {
+                        compatible = "zmk,behavior-soft-off";
+                        #binding-cells = <0>;
+                        label = "SOFT_OFF";
+                };
+        };
+
 
 	vbatt: vbatt {
 		compatible = "zmk,battery-nrf-vddh";
 		label = "BATTERY";
 	};
 
-	softlock {
-		compatible = "zmk,soft-locker-gpio";
+        wakeup_source: wakeup_source {
+                compatible = "zmk,wakeup-trigger-key";
+
+                trigger = <&wakeup_key>;
+                wakeup-source;
+                extra-gpios 
+                        = <&gpio0 12 GPIO_ACTIVE_HIGH>
+                        ;
+        };
+
+	soft_off_wakers {
+		compatible = "zmk,soft-off-wakeup-sources";
+		wakeup-sources = <&wakeup_source>;
+	};
+
+        soft_off_behavior_key {
+                compatible = "zmk,behavior-key";
+                status = "okay";
+                bindings = <&soft_off>;
+                key = <&wakeup_key>;
+        };
+
+	soft_on_off {
+		compatible = "zmk,soft-on-ff-gpio";
 
 		input-gpios = <&gpio0 6 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
 		wakeup-sources = <&kscan>;
@@ -59,7 +97,7 @@
 	>;
 	};
 
-	arrows_transform: standard_transform {
+	arrows_transform: arrows_transform {
 		compatible = "zmk,matrix-transform";
 		rows = <4>;
 		columns = <12>;
@@ -72,7 +110,7 @@
 	>;
 	};
 
-	southpaw_transform: standard_transform {
+	southpaw_transform: southpaw_transform {
 		compatible = "zmk,matrix-transform";
 		rows = <4>;
 		columns = <12>;
@@ -85,7 +123,7 @@
 	>;
 	};
 
-	southpaw_arrows_transform: standard_transform {
+	southpaw_arrows_transform: southpaw_arrows_transform {
 		compatible = "zmk,matrix-transform";
 		rows = <4>;
 		columns = <12>;
